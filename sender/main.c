@@ -66,7 +66,8 @@ int bcastData(char *_data)
 /**
  * @brief   Maybe you are a golfer?!
  */
- #define SINTERVAL (3000000U)
+#define SINTERVAL (3000000U)
+int msgs = 0;
 
 int main(void)
 {
@@ -77,7 +78,10 @@ int main(void)
     while (1) {
       xtimer_usleep_until(&last_wakeup, SINTERVAL);
       //printf( "It is now %"PRIu32"\n", xtimer_now() );
-      bcastData("Hello World!");
+      char msg[25];
+      sprintf(msg, "Msg %u: It is now %lu", msgs, xtimer_now());
+      bcastData(msg);
+      msgs++;
     }
 
     /* register the pktdump thread */
