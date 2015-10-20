@@ -3,7 +3,7 @@ APPLICATION = sender
 BOARD=samr21-xpro
 
 # This has to be the absolute path to the RIOT base directory:
-RIOTBASE ?= $(CURDIR)/../..
+RIOTBASE ?= /home/baron/asgard/RIOT/RIOT
 
 FEATURES_REQUIRED = periph_spi periph_gpio
 
