@@ -6,20 +6,36 @@
 #include "thread.h"
 #include "net/gnrc.h"
 
-#include "xtimer.h"
+#include "od.h"
 
 #define MSG_Q_SIZE  (8U)
 static kernel_pid_t _pid = KERNEL_PID_UNDEF;
 char process_msg_stack[THREAD_STACKSIZE_DEFAULT];
 
+static void process_msgs_parse(gnrc_pktsnip_t *pkt) {
+  int snips = 0;
+  int size = 0;
+  gnrc_pktsnip_t *snip = pkt;
+
+  while (snip != NULL) {
+      //printf("~~ SNIP %2i - size: %3u byte, type: ", snips,
+      //       (unsigned int)snip->size);
+      //od(snip->data, snip->size, 0, OD_FLAGS_BYTES_CHAR);
+      if (snips == 0) {
+        printf(snip->data);
+        printf("\n");
+      }
+      ++snips;
+      size += snip->size;
+      snip = snip->next;
+  }
+
+  //printf("~~ PKT    - %2i snips, total size: %3i byte\n", snips, size);
+  gnrc_pktbuf_release(pkt);
+}
+
 static void *_process_msgs(void *arg) {
   (void)arg;
-  /*uint32_t last_wakeup = xtimer_now();
-  while (1) {
-    xtimer_usleep_until(&last_wakeup, (1000000U));
-    printf( "It is now %"PRIu32"\n", xtimer_now() );
-    //bcastData("Hello World!");
-  }*/
 
   msg_t msg, reply;
   msg_t msg_queue[MSG_Q_SIZE];
@@ -35,7 +51,8 @@ static void *_process_msgs(void *arg) {
 
       switch (msg.type) {
           case GNRC_NETAPI_MSG_TYPE_RCV:
-              puts("Process Msgs: data received:");
+              //puts("Process Msgs: data received:");
+              process_msgs_parse( (gnrc_pktsnip_t *)msg.content.ptr );
               //_dump((gnrc_pktsnip_t *)msg.content.ptr);
               break;
           case GNRC_NETAPI_MSG_TYPE_SND:
