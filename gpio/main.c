@@ -22,52 +22,18 @@
 
 #include "shell.h"
 #include "shell_commands.h"
-#include "periph/gpio.h"
-#include "xtimer.h"
+#include "thread.h"
 
 /**
  * @brief   Maybe you are a golfer?!
  */
-#define FREQ_COUNTER_INTERVAL (1000000U)
-uint32_t freq_counter = 0;  //  Records the number of oscillations per second on freq_counter_pin.
-gpio_t freq_counter_pin = GPIO_PIN(PB, 03); //  The GPIO pin where we are measuring frequency.
-int freq_counter_pin_value;   //  Stores the last known value of the freq_counter_pin
-
-/**
- * @brief   Frequency input pin handler.  Anytime the value
- *          at this pin changes, we check to see if there
- *          has actually been a state change (i.e. 3.3V vs GND),
- *          and increment out freq_counter.
- */
-static void freqCounterISR(void *arg) {
-  //puts("gTest Interrupt Fired!");
-  int _freq_counter_pin_value = gpio_read( freq_counter_pin );
-  if (_freq_counter_pin_value != freq_counter_pin_value) {
-    //  Only increment freq_counter half the time
-    //  (On RISING GPIO events)
-    if (_freq_counter_pin_value) {
-      freq_counter++;
-    }
-    //  Store the new pin value for comparison next iteration.
-    freq_counter_pin_value = _freq_counter_pin_value;
-  }
-}
+//extern kernel_pid_t process_msgs_getpid(void);
+extern kernel_pid_t gpio_thread_init(void);
 
 int main(void)
 {
     puts("GPIO App");
-
-    //  Initialize an interrupt on freq_counter_pin.
-    gpio_init_int( freq_counter_pin, GPIO_NOPULL, GPIO_BOTH, freqCounterISR, NULL );
-
-    //  Every second, report the number of oscillations
-    //  recorded by (int)freq_counter.
-    uint32_t last_wakeup = xtimer_now();
-    while (1) {
-      xtimer_usleep_until(&last_wakeup, FREQ_COUNTER_INTERVAL);
-      printf( "f = %lu\n", freq_counter );
-      freq_counter = 0; // Reset freq_counter.
-    }
+    gpio_thread_init();
 
     /* start the shell */
     puts("Initialization successful - starting the shell now");
