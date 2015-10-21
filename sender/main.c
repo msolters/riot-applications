@@ -38,7 +38,7 @@ int bcastData(char *_data)
     uint8_t flags = 0x00;
 
     /* parse interface */
-    dev = (kernel_pid_t)atoi("4");//(kernel_pid_t)atoi(argv[1]);
+    dev = (kernel_pid_t)4;
 
     /* parse address */
     addr_len = gnrc_netif_addr_from_str(addr, sizeof(addr), "bcast");
