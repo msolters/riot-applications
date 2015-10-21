@@ -53,11 +53,9 @@ static void *_process_msgs(void *arg) {
           case GNRC_NETAPI_MSG_TYPE_RCV:
               //puts("Process Msgs: data received:");
               process_msgs_parse( (gnrc_pktsnip_t *)msg.content.ptr );
-              //_dump((gnrc_pktsnip_t *)msg.content.ptr);
               break;
           case GNRC_NETAPI_MSG_TYPE_SND:
               puts("Process Msgs: data to send:");
-              //_dump((gnrc_pktsnip_t *)msg.content.ptr);
               break;
           case GNRC_NETAPI_MSG_TYPE_GET:
           case GNRC_NETAPI_MSG_TYPE_SET:
